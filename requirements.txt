@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pydantic
+pydantic[email]
+sqlalchemy
+pathlib
+passlib
+bcrypt==4.0.1
+python-jose[cryptography]
+python-multipart
