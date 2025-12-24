@@ -3,7 +3,7 @@ from collections import defaultdict
 from fastapi import APIRouter, Depends, HTTPException, status, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from typing import Annotated
+from typing import Annotated, List
 from jose import JWTError, jwt
 from .auth import get_current_user, SECRET_KEY, ALGORITHM
 
@@ -66,6 +66,16 @@ class ContractRead(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+@router.get("/", response_model=List[ContractRead])
+def get_my_contracts(user: user_dependency, db: db_dependency):
+    """Get all contracts where the current user is either client or freelancer"""
+    contracts = db.query(Contract).filter(
+        (Contract.client_id == user["user_id"]) | 
+        (Contract.freelancer_id == user["user_id"])
+    ).all()
+    return contracts
 
 
 @router.post("/{proposal_id}", response_model=ContractRead, status_code=status.HTTP_201_CREATED)
